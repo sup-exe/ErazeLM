@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ErazeLM - Watermark Remover</title>
+    <meta name="description" content="ErazeLM ile NotebookLM watermark'larını PDF, PPTX ve görsellerden kusursuz şekilde temizleyin. AI tabanlı inpainting teknolojisi ile iz bırakmadan kaldırın.">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='ErazeLM.png') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ cache_bust }}">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header" id="header">
+            <div class="header-inner">
+                <div class="logo-group">
+                    <div>
+                        <h1 class="logo-text">Eraze<span class="accent">LM</span></h1>
+                        <p class="logo-sub">Gelişmiş Watermark Remover</p>
+                    </div>
+                </div>
+                <div class="header-badge">
+                    <span class="badge-dot"></span>
+                    AI Powered
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Step 1: Upload -->
+            <section class="card upload-section" id="upload-section">
+                <div class="card-header">
+                    <div class="step-badge">1</div>
+                    <div>
+                        <h2>Dosya Yükle</h2>
+                        <p class="subtitle">PDF, PPTX, PNG, JPG veya WEBP dosyanızı sürükleyin</p>
+                    </div>
+                </div>
+
+                <div class="dropzone" id="dropzone">
+                    <div class="dropzone-content">
+                        <div class="dropzone-icon">
+                            <svg viewBox="0 0 64 64" fill="none">
+                                <path d="M32 44V20M32 20L22 30M32 20L42 30" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M12 40V48C12 50.2 13.8 52 16 52H48C50.2 52 52 50.2 52 48V40" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <p class="dropzone-text">Dosyayı buraya sürükleyin</p>
+                        <p class="dropzone-hint">veya tıklayarak seçin</p>
+                        <div class="file-types">
+                            <span class="file-type-tag">PDF</span>
+                            <span class="file-type-tag">PPTX</span>
+                            <span class="file-type-tag">PNG</span>
+                            <span class="file-type-tag">JPG</span>
+                            <span class="file-type-tag">WEBP</span>
+                        </div>
+                    </div>
+                    <input type="file" id="file-input" accept=".pdf,.pptx,.png,.jpg,.jpeg,.webp" hidden>
+                </div>
+
+                <!-- File Selected State -->
+                <div class="file-info hidden" id="file-info">
+                    <div class="file-icon-wrap">
+                        <svg class="file-icon" viewBox="0 0 40 40" fill="none">
+                            <rect x="6" y="2" width="28" height="36" rx="4" stroke="currentColor" stroke-width="2"/>
+                            <path d="M12 14H28M12 20H28M12 26H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="file-details">
+                        <p class="file-name" id="file-name">dosya.pdf</p>
+                        <p class="file-size" id="file-size">2.4 MB</p>
+                    </div>
+                    <button class="btn-icon" id="file-remove" title="Kaldır">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Step 2: Overlay (Optional) -->
+            <section class="card overlay-section" id="overlay-section">
+                <div class="card-header">
+                    <div class="step-badge">2</div>
+                    <div>
+                        <h2>Özel Görsel Ekle <span class="optional-tag">İsteğe Bağlı</span></h2>
+                        <p class="subtitle">Watermark'ın yerine kendi logonuzu/görselinizi yerleştirin</p>
+                    </div>
+                </div>
+
+                <div class="overlay-toggle-wrap">
+                    <label class="toggle" id="overlay-toggle-label">
+                        <input type="checkbox" id="overlay-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-text">Watermark alanına özel görsel yerleştir</span>
+                </div>
+
+                <div class="overlay-upload hidden" id="overlay-upload">
+                    <div class="overlay-dropzone" id="overlay-dropzone">
+                        <div class="overlay-dropzone-content">
+                            <svg viewBox="0 0 48 48" fill="none" class="overlay-icon">
+                                <rect x="4" y="4" width="40" height="40" rx="6" stroke="currentColor" stroke-width="2" stroke-dasharray="4 3"/>
+                                <circle cx="18" cy="18" r="4" stroke="currentColor" stroke-width="2"/>
+                                <path d="M4 34L16 22L24 30L32 20L44 34" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <p>Overlay görseli sürükleyin (PNG/JPG)</p>
+                        </div>
+                        <input type="file" id="overlay-input" accept=".png,.jpg,.jpeg,.webp" hidden>
+                    </div>
+                    <div class="overlay-preview hidden" id="overlay-preview">
+                        <img id="overlay-preview-img" alt="Overlay önizleme">
+                        <button class="btn-icon overlay-remove" id="overlay-remove" title="Kaldır">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="overlay-note">
+                        <svg viewBox="0 0 16 16" fill="none" class="info-icon">
+                            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M8 7V12M8 5V5.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                        Görsel, watermark'ın tam boyutuna otomatik olarak yeniden boyutlandırılacaktır
+                    </p>
+                </div>
+            </section>
+
+            <!-- Action Button -->
+            <div class="action-wrap" id="action-wrap">
+                <button class="btn-primary" id="process-btn" disabled>
+                    <svg viewBox="0 0 24 24" fill="none" class="btn-svg">
+                        <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Watermark'ı Temizle</span>
+                </button>
+            </div>
+
+            <!-- Progress -->
+            <section class="card progress-section hidden" id="progress-section">
+                <div class="card-header">
+                    <div class="step-badge step-processing">
+                        <div class="spinner-small"></div>
+                    </div>
+                    <div>
+                        <h2>İşleniyor</h2>
+                        <p class="subtitle" id="progress-text">Hazırlanıyor...</p>
+                    </div>
+                </div>
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar" id="progress-bar">
+                        <div class="progress-bar-fill" id="progress-fill"></div>
+                        <div class="progress-bar-glow"></div>
+                    </div>
+                    <span class="progress-percent" id="progress-percent">0%</span>
+                </div>
+            </section>
+
+            <!-- Result -->
+            <section class="card result-section hidden" id="result-section">
+                <div class="card-header">
+                    <div class="step-badge step-done">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2>Tamamlandı!</h2>
+                        <p class="subtitle" id="result-text">Watermark başarıyla kaldırıldı</p>
+                    </div>
+                </div>
+
+                <!-- Before/After Preview (images only) -->
+                <div class="preview-container hidden" id="preview-container">
+                    <div class="preview-label-bar">
+                        <span class="preview-label label-before">Önceki</span>
+                        <span class="preview-label label-after">Sonraki</span>
+                    </div>
+                    <div class="comparison-slider" id="comparison-slider">
+                        <div class="comparison-before" id="comparison-before">
+                            <img id="preview-before-img" alt="Önceki">
+                        </div>
+                        <div class="comparison-after" id="comparison-after">
+                            <img id="preview-after-img" alt="Sonraki">
+                        </div>
+                        <div class="comparison-handle" id="comparison-handle">
+                            <div class="handle-line"></div>
+                            <div class="handle-circle">
+                                <svg viewBox="0 0 24 24" fill="none">
+                                    <path d="M8 12H4L8 8M8 12L4 16M16 12H20L16 8M16 12L20 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div class="handle-line"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-actions">
+                    <button class="btn-primary btn-download" id="download-btn">
+                        <svg viewBox="0 0 24 24" fill="none" class="btn-svg">
+                            <path d="M21 15V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V15M7 10L12 15L17 10M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>İndir</span>
+                    </button>
+                    <button class="btn-secondary" id="new-file-btn">
+                        <svg viewBox="0 0 24 24" fill="none" class="btn-svg">
+                            <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <span>Yeni Dosya</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Error -->
+            <section class="card error-section hidden" id="error-section">
+                <div class="card-header">
+                    <div class="step-badge step-error">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2>Hata</h2>
+                        <p class="subtitle" id="error-text">Bir sorun oluştu</p>
+                    </div>
+                </div>
+                <button class="btn-secondary" id="retry-btn">
+                    <span>Tekrar Dene</span>
+                </button>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>ErazeLM — AI tabanlı kusursuz filigran temizliği</p>
+            <p class="footer-disclaimer">
+                Bu araç yalnızca yasal haklara sahip olduğunuz belgeler için kullanılmalıdır.
+            </p>
+        </footer>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}?v={{ cache_bust }}"></script>
+</body>
+</html>
