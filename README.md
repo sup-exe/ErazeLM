@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌟 ErazeLM
+# ErazeLM
 <img src="ErazeLM.png" alt="ErazeLM Logo" width="200" height="200">
 
 **Advanced AI-Powered Watermark Remover**
